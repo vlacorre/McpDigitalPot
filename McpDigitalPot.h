@@ -1,18 +1,18 @@
 
-// MCP4261 2-channel Digital Potentiometer
+// McpDigitalPot 2-channel Digital Potentiometer
 // ww1.microchip.com/downloads/en/DeviceDoc/22059b.pdf
 
-#ifndef Mcp4261_h
-#define Mcp4261_h
+#ifndef McpDigitalPot_h
+#define McpDigitalPot_h
 
-class MCP4261
+class McpDigitalPot
 {
   public:
     // You must at least specify the slave select pin and the rated resistance
-    MCP4261(uint8_t slave_select, float rAB_ohms);
+    McpDigitalPot(uint8_t slave_select, float rAB_ohms);
 
     // If you have measured wiper resistance, rW
-    MCP4261(uint8_t slave_select, float rAB_ohms, float rW_ohms);
+    McpDigitalPot(uint8_t slave_select, float rAB_ohms, float rW_ohms);
 
     // The resistance scaling, defaults to rAB_ohms
     float scale;
@@ -26,10 +26,16 @@ class MCP4261
     // Write potentiometer values
     void wiper0(float ohms);
     void wiper1(float ohms);
-
+    
+    void wiper0_non_volatile(float ohms);
+    void wiper1_non_volatile(float ohms);
+    
     void wiper0_pos(unsigned int wiper_pos);
     void wiper1_pos(unsigned int wiper_pos);
 
+    void wiper0_pos_non_volatile(unsigned int wiper_pos);
+    void wiper1_pos_non_volatile(unsigned int wiper_pos);
+    
     // // Not implemented
     // // Connect / disconnect potentiometers
     // bool pot0_connected(bool terminal_a, bool wiper, bool terminal_b);
@@ -53,8 +59,7 @@ class MCP4261
     // MCP4N-- N=1 single pot, N=2 dual pot
     // MCP4--N N=1 potentiometer, N=2 rheostat
     // MCP4-N- N=3 7-bit volatile, N=4 7-bit non-volatile, N=5 8-bit volatile, N=6 8-bit non-volatile
-    const static bool         non_volatile    = true;
-    const static unsigned int resolution      = resolution_8bit;
+    const static unsigned int resolution      = resolution_7bit;
 
     float rW_ohms;
     float rAB_ohms;
@@ -87,10 +92,10 @@ class MCP4261
 
     uint16_t read(byte cmd_byte);
     void write(byte cmd_byte, byte data_byte);
-    void wiper_pos(byte pot, unsigned int wiper_pos);
+    void wiper_pos(byte pot, unsigned int wiper_pos, bool non_volatile);
 };
 
-#endif // Mcp4261_h
+#endif // McpDigitalPot_h
 
 
 
