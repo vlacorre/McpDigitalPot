@@ -12,10 +12,11 @@ McpDigitalPot is a simple object which allows your Arduino to control the MCP414
 * Generic example (works with all 328P Arduinos)
 * Requires only very minor modifications for Arduino MEGA.
 * Can instantiate multiple McpDigitalPot objects, each with unique slave select
-* Very simple interface and very few configuration
-* Works with other devices in this series (see below the Compatability section)
-* Individual wiper commands and dual wiper commands as this is a dual (2-channel) potentiometer
+* Very simple interface requiring little configuration
+* Works with other devices in this series (see below the Compatibility section)
+* Individually address each wiper
 * Read/write the potentiometer values as either the nearest rounded wiper resistance (in ohms), or wiper position (0-256).
+* Optionally write the wiper value to non-volatile memory (EEPROM in MCP4x[4|6]x devices only)
 
 ### Requirements
 
