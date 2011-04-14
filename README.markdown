@@ -33,7 +33,7 @@ Dreamcat4
 
 ### Compatibility
 
-This library is broadly compatible with the other devices in this series. They are: Microchip MCP4131, MCP4132, MCP4231, MCP4232, MCP4141, MCP4142, MCP4241, MCP4242, MCP4151, MCP4152, MCP4251, MCP4252, MCP4161, MCP4162, MCP4261, MCP4262. Just adjust this lines in the header file as appropriate
+This library is broadly compatible with the other devices in this series. They are: Microchip MCP4131, MCP4132, MCP4231, MCP4232, MCP4141, MCP4142, MCP4241, MCP4242, MCP4151, MCP4152, MCP4251, MCP4252, MCP4161, MCP4162, MCP4261, MCP4262. Just adjust this line in the header file as appropriate:
 
     const static unsigned int resolution      = resolution_8bit;
 
