@@ -20,7 +20,7 @@ McpDigitalPot is a simple object which allows your Arduino to control the MCP414
 ### Requirements
 
 * [MCP414X/416X/424X/426X Product Datasheet](ww1.microchip.com/downloads/en/DeviceDoc/22059b.pdf)*
-* [Arduino SPI Library](http://arduino.cc/en/Reference/SPI)! 
+* [Arduino SPI Library](http://arduino.cc/en/Reference/SPI)
 
 \* Sorry, but the previous series of Microchip Digital Potentiometers (any with a total of 5 digits in their name eg 42100) had a very different command syntax and arent supported. They are listed on Page 29 of [the previous MCP 4Xxxx Data Sheet](http://ww1.microchip.com/downloads/en/devicedoc/11195c.pdf).
 
