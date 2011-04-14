@@ -13,14 +13,14 @@
 
 McpDigitalPot::McpDigitalPot(uint8_t slave_select_pin, float rAB_ohms)
 {
-  setup_ss(slave_select_pin);
-  setup_resistance(rAB_ohms, rW_ohms_typical);
+  initSpi(slave_select_pin);
+  initResistance(rAB_ohms, rW_ohms_typical);
 }
 
 McpDigitalPot::McpDigitalPot(uint8_t slave_select_pin, float rAB_ohms, float rW_ohms)
 {
-  setup_ss(slave_select_pin);
-  setup_resistance(rAB_ohms, rW_ohms);
+  initSpi(slave_select_pin);
+  initResistance(rAB_ohms, rW_ohms);
 }
 
 //------------------ protected -----------------------------------------------
@@ -40,7 +40,7 @@ byte McpDigitalPot::uint16_low_byte(uint16_t uint16)
   return (byte)(uint16 & 0x00FF);
 }
 
-void McpDigitalPot::setup_ss(uint8_t slave_select_pin)
+void McpDigitalPot::initSpi(uint8_t slave_select_pin)
 {
   // Set slave select (Chip Select) pin for SPI Bus, and start high (disabled)
   ::pinMode(slave_select_pin,OUTPUT);
@@ -48,7 +48,7 @@ void McpDigitalPot::setup_ss(uint8_t slave_select_pin)
   this->slave_select_pin = slave_select_pin;
 }
 
-void McpDigitalPot::setup_resistance(float rAB_ohms, float rW_ohms)
+void McpDigitalPot::initResistance(float rAB_ohms, float rW_ohms)
 {
   this->rAB_ohms             = rAB_ohms;
   this->rW_ohms              = rW_ohms;
@@ -56,32 +56,32 @@ void McpDigitalPot::setup_resistance(float rAB_ohms, float rW_ohms)
   this->scale                = rAW_ohms_max;
 }
 
-float McpDigitalPot::step_increment()
+float McpDigitalPot::wiperPositionIncrement()
 {
   return (rAW_ohms_max - rW_ohms) / resolution;
 }
 
-unsigned int McpDigitalPot::ohms2wiper_pos(float ohms)
+unsigned int McpDigitalPot::resistanceToPosition(float resistance)
 {
-  if(ohms <= 0.0)
+  if(resistance <= 0.0)
     return 0;
   else if(scale != rAW_ohms_max)
-    ohms = ohms * rAW_ohms_max / scale;
+    resistance = resistance * rAW_ohms_max / scale;
 
-  return (unsigned int)((ohms - rW_ohms) / step_increment() ) + 0.5;
+  return (unsigned int)((resistance - rW_ohms) / wiperPositionIncrement() ) + 0.5;
 }
 
-float McpDigitalPot::wiper_pos2ohms(unsigned int wiper_pos)
+float McpDigitalPot::positionToResistance(unsigned int position)
 {
-  float ohms =  rW_ohms + ( (float)wiper_pos * step_increment() );
+  float resistance =  rW_ohms + ( (float)position * wiperPositionIncrement() );
 
   if(scale != rAW_ohms_max)
-    ohms = ohms * scale / rAW_ohms_max;
+    resistance = resistance * scale / rAW_ohms_max;
   
-  return ohms;
+  return resistance;
 }
 
-void McpDigitalPot::write(byte cmd_byte, byte data_byte)
+void McpDigitalPot::spiWrite(byte cmd_byte, byte data_byte)
 {
   cmd_byte |= kCMD_WRITE;
   ::digitalWrite(slave_select_pin, LOW);
@@ -91,7 +91,7 @@ void McpDigitalPot::write(byte cmd_byte, byte data_byte)
   bool result = ~low_byte;
 }
 
-uint16_t McpDigitalPot::read(byte cmd_byte)
+uint16_t McpDigitalPot::spiRead(byte cmd_byte)
 {
   cmd_byte |= kCMD_READ;
   ::digitalWrite(slave_select_pin, LOW);
@@ -101,89 +101,72 @@ uint16_t McpDigitalPot::read(byte cmd_byte)
   return byte2uint16(high_byte, low_byte);
 }
 
-void McpDigitalPot::wiper_pos(byte pot, unsigned int wiper_pos, bool non_volatile)
+void McpDigitalPot::internalSetWiperPosition(byte wiperAddress, unsigned int position, bool isNonVolatile)
 {
   byte cmd_byte    = 0x00;
   byte data_byte   = 0x00;
-  cmd_byte        |= pot;
+  cmd_byte        |= wiperAddress;
 
   // Calculate the 9-bit data value to send
-  if(wiper_pos > 255)
+  if(position > 255)
     cmd_byte      |= B00000001; // Table 5-1 (page 36)
   else
-    data_byte      = (byte)(wiper_pos & 0x00FF);
+    data_byte      = (byte)(position & 0x00FF);
 
-  write(cmd_byte|kADR_VOLATILE, data_byte);
+  spiWrite(cmd_byte|kADR_VOLATILE, data_byte);
 
-  if(non_volatile)
+  if(isNonVolatile)
   {
     // EEPROM write cycles take 4ms each. So we block with delay(5); after any NV Writes
-    write(cmd_byte|kADR_NON_VOLATILE, data_byte);
+    spiWrite(cmd_byte|kADR_NON_VOLATILE, data_byte);
     delay(5);
   }
 }
 
 //---------- public ----------------------------------------------------
 
-float McpDigitalPot::wiper0()
+float McpDigitalPot::getResistance(unsigned int wiperIndex)
 {
-  return wiper_pos2ohms( wiper0_pos() );
+  return positionToResistance( getPosition(wiperIndex) );
 }
 
-float McpDigitalPot::wiper1()
+unsigned int McpDigitalPot::getPosition(unsigned int wiperIndex)
 {
-  return wiper_pos2ohms( wiper1_pos() );
+  if (wiperIndex == 1) {
+     return 0x01FF & this->spiRead(kADR_WIPER1|kADR_VOLATILE);
+  } else {
+     return (unsigned int)( 0x01FF & this->spiRead(kADR_WIPER0|kADR_VOLATILE) );
+  }
 }
 
-unsigned int McpDigitalPot::wiper0_pos()
+void McpDigitalPot::setResistance(unsigned int wiperIndex, float resistance)
 {
-  return (unsigned int)( 0x01FF & this->read(kADR_WIPER0|kADR_VOLATILE) );
+  setPosition( wiperIndex, resistanceToPosition(resistance) );
 }
 
-unsigned int McpDigitalPot::wiper1_pos()
+void McpDigitalPot::writeResistance(unsigned int wiperIndex, float resistance)
 {
-  return 0x01FF & this->read(kADR_WIPER1|kADR_VOLATILE);
+  writePosition( wiperIndex, resistanceToPosition(resistance) );
 }
 
-void McpDigitalPot::wiper0(float ohms)
+void McpDigitalPot::setPosition(unsigned int wiperIndex, unsigned int position)
 {
-  wiper0_pos( ohms2wiper_pos(ohms) );
+  if (wiperIndex == 1) {
+    this->internalSetWiperPosition(kADR_WIPER1, position, false);
+  } else {
+    this->internalSetWiperPosition(kADR_WIPER0, position, false);
+  }
 }
 
-void McpDigitalPot::wiper1(float ohms)
+void McpDigitalPot::writePosition(unsigned int wiperIndex, unsigned int position)
 {
-  wiper1_pos( ohms2wiper_pos(ohms) );
+  if (wiperIndex == 1) {
+    this->internalSetWiperPosition(kADR_WIPER1, position, true);
+  } else {
+    this->internalSetWiperPosition(kADR_WIPER0, position, true);
+  }
 }
 
-void McpDigitalPot::wiper0_non_volatile(float ohms)
-{
-  wiper0_pos_non_volatile( ohms2wiper_pos(ohms) );
-}
-
-void McpDigitalPot::wiper1_non_volatile(float ohms)
-{
-  wiper1_pos_non_volatile( ohms2wiper_pos(ohms) );
-}
-
-void McpDigitalPot::wiper0_pos(unsigned int wiper_pos)
-{
-  this->wiper_pos(kADR_WIPER0, wiper_pos, false);
-}
-
-void McpDigitalPot::wiper1_pos(unsigned int wiper_pos)
-{
-  this->wiper_pos(kADR_WIPER1, wiper_pos, false);
-}
-
-void McpDigitalPot::wiper0_pos_non_volatile(unsigned int wiper_pos)
-{
-  this->wiper_pos(kADR_WIPER0, wiper_pos, true);
-}
-
-void McpDigitalPot::wiper1_pos_non_volatile(unsigned int wiper_pos)
-{
-  this->wiper_pos(kADR_WIPER1, wiper_pos, true);
-}
 
 
 // // Not implemented

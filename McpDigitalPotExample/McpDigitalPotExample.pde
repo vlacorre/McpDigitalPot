@@ -39,25 +39,25 @@ void setup()
   SPI.begin(); 
   
   // First measure the the wiper resistance, called rW
-  digitalPot.wiper0_pos(0); // rAW = rW_ohms
-  digitalPot.wiper1_pos(0); // rAW = rW_ohms
+  digitalPot.setPosition(0, 0); // rAW = rW_ohms
+  digitalPot.setPosition(1, 0); // rAW = rW_ohms
   delay(5000);
   
   // (optional)
   // Scale to 100.0 for a percentage, or 1.0 for a fraction
-  // Eg if scale=100, then wiper(100) = max rAW resistance
-  // Eg    scale=1.0, then wiper(1.0) = max rAW resistance
+  // Eg if scale=100, then setResistance(0, 100) = max rAW resistance
+  // Eg    scale=1.0, then setResistance(0, 1.0) = max rAW resistance
   // digitalPot.scale = 1.0;
 
   digitalPot.scale = 100.0; // For the timeout example, below
 
-  // digitalPot.wiper0(40); // set pot0 rAW = 40% of max value
-  // digitalPot.wiper1(80); // set pot1 rAW = 80% of max value
+  // digitalPot.setResistance(0, 40); // set pot0 rAW = 40% of max value
+  // digitalPot.setResistance(1, 80); // set pot1 rAW = 80% of max value
   // 
   // delay(5000);
   // 
-  // digitalPot.wiper0(5);  // set pot0 rAW =  5% of max value
-  // digitalPot.wiper1(50); // set pot1 rAW = 50% of max value
+  // digitalPot.setResistance(0, 5);  // set pot0 rAW =  5% of max value
+  // digitalPot.setResistance(1, 50); // set pot1 rAW = 50% of max value
 
   // Go back to using ohms
   // digitalPot.scale = McpDigitalPot.rAB_ohms;
@@ -77,8 +77,8 @@ void timeout()
     counter = 0.0;
 
   // These resistances are just percentages of 100
-  digitalPot.wiper0(counter);
-  digitalPot.wiper1(100 - counter); // Invert the wiper1
+  digitalPot.setResistance(0, counter);
+  digitalPot.setResistance(1, 100 - counter); // Invert the wiper1
 
   counter += 20.0;
 }

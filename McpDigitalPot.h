@@ -18,23 +18,15 @@ class McpDigitalPot
     float scale;
 
     // Read potentiometer values
-    float wiper0();
-    float wiper1();
-    unsigned int wiper0_pos();
-    unsigned int wiper1_pos();
+    float getResistance(unsigned int wiperIndex);
+    unsigned int getPosition(unsigned int wiperIndex);
 
     // Write potentiometer values
-    void wiper0(float ohms);
-    void wiper1(float ohms);
+    void setResistance(unsigned int wiperIndex, float resistance);
+    void writeResistance(unsigned int wiperIndex, float resistance);
     
-    void wiper0_non_volatile(float ohms);
-    void wiper1_non_volatile(float ohms);
-    
-    void wiper0_pos(unsigned int wiper_pos);
-    void wiper1_pos(unsigned int wiper_pos);
-
-    void wiper0_pos_non_volatile(unsigned int wiper_pos);
-    void wiper1_pos_non_volatile(unsigned int wiper_pos);
+    void setPosition(unsigned int wiperIndex, unsigned int position);
+    void writePosition(unsigned int wiperIndex, unsigned int position);
     
     // // Not implemented
     // // Connect / disconnect potentiometers
@@ -83,16 +75,16 @@ class McpDigitalPot
     byte uint16_high_byte(uint16_t uint16);
     byte uint16_low_byte(uint16_t uint16);
 
-    void setup_ss(uint8_t slave_select_pin);
-    void setup_resistance(float rAB_ohms, float rW_ohms);
+    void initSpi(uint8_t slave_select_pin);
+    void initResistance(float rAB_ohms, float rW_ohms);
 
-    float step_increment();
-    unsigned int ohms2wiper_pos(float ohms);
-    float wiper_pos2ohms(unsigned int wiper_pos);
+    float wiperPositionIncrement();
+    unsigned int resistanceToPosition(float ohms);
+    float positionToResistance(unsigned int wiper_pos);
 
-    uint16_t read(byte cmd_byte);
-    void write(byte cmd_byte, byte data_byte);
-    void wiper_pos(byte pot, unsigned int wiper_pos, bool non_volatile);
+    uint16_t spiRead(byte cmd_byte);
+    void spiWrite(byte cmd_byte, byte data_byte);
+    void internalSetWiperPosition(byte wiperAddress, unsigned int position, bool isNonVolatile);
 };
 
 #endif // McpDigitalPot_h
