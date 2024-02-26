@@ -43,7 +43,7 @@ class McpDigitalPot
     // bool hw_shutdown();
 
   protected:
-    const static float        rW_ohms_typical = 117.50;
+    constexpr static float        rW_ohms_typical = 117.50;
     const static unsigned int resolution_7bit = 128;
     const static unsigned int resolution_8bit = 256;
 
@@ -51,7 +51,7 @@ class McpDigitalPot
     // MCP4N-- N=1 single pot, N=2 dual pot
     // MCP4--N N=1 potentiometer, N=2 rheostat
     // MCP4-N- N=3 7-bit volatile, N=4 7-bit non-volatile, N=5 8-bit volatile, N=6 8-bit non-volatile
-    const static unsigned int resolution      = resolution_7bit;
+    const static unsigned int resolution      = resolution_8bit;
 
     float rW_ohms;
     float rAB_ohms;

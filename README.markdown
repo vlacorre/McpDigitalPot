@@ -2,6 +2,8 @@
 
 A C++ object to control the Microchip MCP414X/416X/424X/426X family of Digital Potentiometers and Rheostats. For the Arduino Platform.
 
+New: updated for C++11 and above.
+
 ### Introduction
 
 McpDigitalPot is a simple object which allows your Arduino to control the MCP414X/416X/424X/426X family of digital potentiometers and rheostats, to set wiper positions etc. To use, we just wire up the SPI bus and instantiate a new object. The chip powers up with the wiper state as per the value stored in its non-volatile (EEPROM) memory. This library may also work with other MCP digital potentiometer devices, and/or other AVR microcontroller devices after some tweaking. This library was tested on Arduino UNO and Nano.
