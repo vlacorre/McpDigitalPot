@@ -43,7 +43,7 @@ class McpDigitalPot
     // bool hw_shutdown();
 
   protected:
-    constexpr static float        rW_ohms_typical = 117.50;
+    constexpr static float    rW_ohms_typical = 117.50;
     const static unsigned int resolution_7bit = 128;
     const static unsigned int resolution_8bit = 256;
 
