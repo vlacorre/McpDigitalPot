@@ -2,7 +2,7 @@
 // McpDigitalPot 2-channel Digital Potentiometer
 // ww1.microchip.com/downloads/en/DeviceDoc/22059b.pdf
 
-// The default SPI Control Register - SPCR = B01010000;
+// The default SPI Control Register - SPCR = 0b01010000;
 // interrupt disabled,spi enabled,msb 1st,master,clk low when idle,
 // sample on leading edge of clk,system clock/4 rate (fastest).
 // Enable the digital pins 11-13 for SPI (the MOSI,MISO,SPICLK)
@@ -109,7 +109,7 @@ void McpDigitalPot::internalSetWiperPosition(byte wiperAddress, unsigned int pos
 
   // Calculate the 9-bit data value to send
   if(position > 255)
-    cmd_byte      |= B00000001; // Table 5-1 (page 36)
+    cmd_byte      |= 0b00000001; // Table 5-1 (page 36)
   else
     data_byte      = (byte)(position & 0x00FF);
 

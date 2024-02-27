@@ -59,17 +59,17 @@ class McpDigitalPot
 
     uint8_t slave_select_pin;
 
-    const static uint8_t kADR_WIPER0       = B00000000;
-    const static uint8_t kADR_WIPER1       = B00010000;
+    const static uint8_t kADR_WIPER0       = 0b00000000;
+    const static uint8_t kADR_WIPER1       = 0b00010000;
 
-    const static uint8_t kCMD_READ         = B00001100;
-    const static uint8_t kCMD_WRITE        = B00000000;
+    const static uint8_t kCMD_READ         = 0b00001100;
+    const static uint8_t kCMD_WRITE        = 0b00000000;
 
-    const static uint8_t kADR_VOLATILE     = B00000000;
-    const static uint8_t kADR_NON_VOLATILE = B00100000;
+    const static uint8_t kADR_VOLATILE     = 0b00000000;
+    const static uint8_t kADR_NON_VOLATILE = 0b00100000;
 
-    const static uint8_t kTCON_REGISTER    = B01000000;
-    const static uint8_t kSTATUS_REGISTER  = B01010000;
+    const static uint8_t kTCON_REGISTER    = 0b01000000;
+    const static uint8_t kSTATUS_REGISTER  = 0b01010000;
 
     uint16_t byte2uint16(byte high_byte, byte low_byte);
     byte uint16_high_byte(uint16_t uint16);
