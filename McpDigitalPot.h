@@ -5,6 +5,8 @@
 #ifndef McpDigitalPot_h
 #define McpDigitalPot_h
 
+extern SPIClassSAMD SPI; // SPI is either defined by the Arduino library in SPI.h or is user-defined.
+
 class McpDigitalPot
 {
   public:
